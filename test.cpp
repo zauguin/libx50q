@@ -38,6 +38,7 @@
 
 using namespace mfk;
 
+/*
 void set_profile(X50Q &dev) {
   using namespace std::chrono_literals;
   std::array<ByteSeconds, 144> durations = {
@@ -58,7 +59,7 @@ void set_profile(X50Q &dev) {
   dev.apply_effects_active(effects);
 
   // These somehow set the color after pressing the key, set to all zero to make dark
-  /* dev.apply_colors_active(buffer); */
+  // dev.apply_colors_active(buffer);
 
   // Idle effect
   for (auto &e : effects)
@@ -67,9 +68,9 @@ void set_profile(X50Q &dev) {
   return;
 
   // 4*11+8+8+13+7+10+17
-  // 107 keys + two side lamps = 109
-  // Stride: 144. Last one is dead (Probably for other layouts)
-  // The remaining 35 keys are mixed in.
+  // 107 keys + two side bars with 2 LEDS each + four LED's for the volume knob = 115
+  // Stride: 144. The other 29 positions don't seem to have any function.
+  // The remaining 29 keys are mixed in.
   std::uint8_t colors[3][144] = {
       {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -95,6 +96,7 @@ void set_profile(X50Q &dev) {
 
   dev.apply_colors_idle(colors);
 }
+*/
 
 std::array<std::uint8_t, 115> mapping = {
     45, 27,  18,  9,   14,  0,   5,   90, 95, 77,  63,  68,  54,  59,  99,  104, 111, 120, 129, 46,
