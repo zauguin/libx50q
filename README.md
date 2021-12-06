@@ -1,7 +1,6 @@
 # Experimental cross platform C++ library to control colors for Das Keyboard X50Q
 
-Only tested on Linux, but theoretically Windows and Mac should work too. Based on [hidapi](https://github.com/libusb/hidapi). On Linux the hidraw backend requires a patched kernel in order for the kernel's HID driver to handle interfaces without input interrupt endpoints,
-so for an unpatched kernel the libusb backend has to be used.
+Only tested on Linux, but theoretically Windows and Mac should work too. Based on [hidapi](https://github.com/libusb/hidapi) and [libusb](https://github.com/libusb/libusb). On Linux the hidraw backend for hidapi is recommended over the libusb API since otherwise media keys don't work while the library is active.
 
 This has been written without any official documentation of the interfaces from the vendor and is purely based on observing the behavior of the Windows driver.
 **It might brick your keyboard. Use at your own risk.**
@@ -10,6 +9,7 @@ This has been written without any official documentation of the interfaces from 
 - A relativly modern C++ compiler
 - [libfmt](https://github.com/fmtlib/fmt)
 - [hidapi](https://github.com/libusb/hidapi)
+- [libusb](https://github.com/libusb/libusb)
 
 All of this should be available from most package managers.
 

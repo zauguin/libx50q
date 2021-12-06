@@ -26,6 +26,7 @@
 #ifndef X50Q_HPP
 #define X50Q_HPP
 #include "hidapi.hpp"
+#include "libusb.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -95,15 +96,18 @@ class X50Q {
   };
 
  private:
-  hidapi::HidDevice output;
+  libusb::Device::Handle output;
+  std::uint8_t endpoint;
   hidapi::HidDevice input;
-  std::function<void(std::uint8_t)> profile_change_callback = [](std::uint8_t profile) {
+  std::function<void(std::uint8_t)> profile_change_callback /*= [](std::uint8_t profile) {
     fmt::print("Changed profile to {}.\n", profile);
-  };
+  }*/;
   std::function<void(bool)> volume_key_callback;
 
   std::array<std::byte, 7> generic_exchange(std::span<const std::byte, 64> buffer) {
-    output.write(buffer);
+    auto remaining = output.send_interrupt(endpoint, buffer);
+    if (!remaining.empty())
+      throw ProtocolException(0, remaining);
     while (true) {
       // We allocate 10 bytes even though we only expect 9 bytes. This allows us to detect if too
       // much data was provided.
@@ -178,22 +182,45 @@ class X50Q {
 
   static X50Q find_device(std::uint16_t vid, std::uint16_t pid) {
     auto &hid = hidapi::HidApi::get();
-    std::optional<std::string> in_path, out_path;
+    std::optional<std::string> path;
     for (auto &&dev : hid.enumerate(vid, pid)) {
-      switch (dev.interface_number) {
-      case 1: in_path = dev.path; break;
-      case 2: out_path = dev.path; break;
+      if (1 == dev.interface_number) {
+        path = dev.path;
+        break;
       }
     }
-    if (!in_path || !out_path) throw std::runtime_error("X50Q keyboard not detected");
-    auto in_handle  = hid.open(in_path->c_str());
-    auto out_handle = hid.open(out_path->c_str());
+    if (!path) throw std::runtime_error("X50Q keyboard not detected");
+    auto in_handle = hid.open(path->c_str());
+
+    auto &context = libusb::Context::get();
+    libusb::Device out_handle;
+    for (auto &&dev : context.list()) {
+      auto desc = dev.device_descriptor();
+      if (desc.idVendor == vid && desc.idProduct == pid) { out_handle = std::move(dev); }
+    }
+    if (!out_handle) throw std::runtime_error("Unable to find keyboard with libusb");
+
     return X50Q(std::move(in_handle), std::move(out_handle));
   }
 
+  // Find the output interrup endpoint id for configuration 0, interface 2, endpoint 0
+  static std::uint16_t find_endpoint(const libusb::Device &dev) {
+    auto config = dev.active_config_descriptor();
+    assert(config->bNumInterfaces == 3);
+    auto out_iface = config->interface[2];
+    assert(out_iface.num_altsetting == 1);
+    auto alternate = out_iface.altsetting[0];
+    assert(alternate.bNumEndpoints == 1);
+    auto endpoint = alternate.endpoint[0];
+    assert(endpoint.bmAttributes == LIBUSB_ENDPOINT_TRANSFER_TYPE_INTERRUPT);
+    assert((endpoint.bEndpointAddress & LIBUSB_ENDPOINT_DIR_MASK) == LIBUSB_ENDPOINT_OUT);
+    assert(endpoint.wMaxPacketSize == 64);
+    return endpoint.bEndpointAddress;
+  }
+
  public:
-  X50Q(hidapi::HidDevice input, hidapi::HidDevice output):
-      output(std::move(output)), input(std::move(input)) {}
+  X50Q(hidapi::HidDevice input, libusb::Device output):
+      output(output.open()), endpoint(find_endpoint(output)), input(std::move(input)) {}
   X50Q(std::uint16_t vid = 0x24f0, std::uint16_t pid = 0x202b): X50Q(find_device(vid, pid)) {}
 
   Status status() {
