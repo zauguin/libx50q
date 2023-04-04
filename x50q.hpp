@@ -36,6 +36,7 @@
 #include <optional>
 #include <span>
 #include <thread>
+#include <functional>
 #include <vector>
 
 namespace mfk {
