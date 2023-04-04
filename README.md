@@ -26,9 +26,10 @@ This library only deals with low-level communication with the keyboard and does 
 The library often uses arrays of 144 codes. The order does not correspond to any kind of common scancodes/keycodes/whatever
 that I've seen before and sometimes feels rather random. Since the keyboard does not actually contain 144 keys it also has quite some holes in rather random positions.
 Colors/effects/... written to these position seem to get ignored.
-The `test` example demonstrates all available positions and the source contains a list of the codes in a slightly more sensible order.
+The `test` example in the `demo` directory demonstrates all available positions and the source contains a list of the codes in a slightly more sensible order.
 
 ## Examples
 `single_color.cpp` and `rainbow.cpp` demonstrate the general interface of the library.
+Both can be found under `demo.
 They might also be a useful on their own. (`single_color` sets the keyboard to a single color chosen by the user,
 `rainbow` recreates the animated rainbow pattern the keyboard gets shipped with)
