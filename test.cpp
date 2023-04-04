@@ -107,6 +107,16 @@ std::array<std::uint8_t, 115> mapping = {
     67, 140, 137, 138, 141, 132, 121, 36, 42, 123, 51,  117, 126, 118, 131,
 };
 
+// UK layout support
+std::array<std::uint8_t, 117> ukMapping = {
+    45, 27,  18,  9,   14,  0,   5,   90, 95, 77,  63,  68,  54,  59,  99,  104, 111, 120, 129, 46,
+    37, 28,  19,  10,  15,  1,   6,   91, 96, 81,  72,  64,  60,  61,  105, 106, 102, 110, 128, 119,
+    47, 38,  29,  20,  11,  16,  2,   92, 82, 87,  73,  65,  69,  56,  101, 103, 100, 142, 115, 133,
+    48, 39,  30,  21,  25,  12,  3,   93, 83, 84,  74,  66,  57, 58,  139, 112, 130, 124, 49,  40, 31, 33,
+    24, 22,  13,  4,   94,  85,  86,  76, 70, 135, 136, 109, 127, 50,  41,  32,  23,  88,  79,  78,
+    67, 140, 137, 138, 141, 132, 121, 36, 42, 123, 51,  117, 126, 118, 131,
+};
+
 int main(int argc, char *argv[]) try {
   X50Q dev;
   // We start with built-in 6 (the profile activated with fn+numpad 0)
@@ -114,6 +124,7 @@ int main(int argc, char *argv[]) try {
   dev.set_builtin(6);
   // Initialize a buffer for color values. At the beginning, everything is black (aka RGB 0, 0, 0)
   std::uint8_t buf[3][144] = {};
+  // Iterate over all keys, can change to mapping for UK layout
   for (auto i : mapping) {
     // Set the key at index i to white by settings all three components to maximum.
     buf[0][i] = buf[1][i] = buf[2][i] = 0xFF;
