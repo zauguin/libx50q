@@ -1,0 +1,2 @@
+SUBSYSTEM=="usb", ATTRS{idVendor}=="24f0", ATTRS{idProduct}=="202b", MODE:="666", GROUP="input"
+KERNEL=="hidraw*", ATTRS{idVendor}=="24f0", ATTRS{idProduct}=="202b", MODE="0666", GROUP="input", RUN+="/path/to/apply_profile /path/to/my_profile"
