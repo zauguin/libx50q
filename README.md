@@ -25,10 +25,13 @@ This library only deals with low-level communication with the keyboard and does 
 
 The library often uses arrays of 144 codes. The order does not correspond to any kind of common scancodes/keycodes/whatever
 that I've seen before and sometimes feels rather random. Since the keyboard does not actually contain 144 keys it also has quite some holes in rather random positions.
+Seems like this may be due to international keyboard layouts, but I'm not sure.
 Colors/effects/... written to these position seem to get ignored.
 The `test` example demonstrates all available positions and the source contains a list of the codes in a slightly more sensible order.
+There are currently two mappings in the test example, one for the UK layout and one for the German layout.
 
 ## Examples
-`single_color.cpp` and `rainbow.cpp` demonstrate the general interface of the library.
+`single_color.cpp`, `static_rainbow.cpp` and `rainbow.cpp` demonstrate the general interface of the library.
 They might also be a useful on their own. (`single_color` sets the keyboard to a single color chosen by the user,
 `rainbow` recreates the animated rainbow pattern the keyboard gets shipped with)
+`static_rainbow` is a static version of the rainbow pattern from the Q software.
